@@ -1,0 +1,160 @@
+{% extends "banner_base.html" %}
+
+{% load i18n %}
+{% load ifsetting_tag %}
+
+{% block head_title %}{% trans "Welcome" %}{% endblock %}
+
+{% block body_class %}home{% endblock %}
+
+{% block banner %}
+
+
+    <h1>{% trans "Welcome to FilterCam" %}</h1>
+    <p>
+        {% blocktrans %}
+        <b>FilterCam.com</b> is a <a href="http://en.wikipedia.org/wiki/IP_camera">Network Camera</a>
+        recorder that makes it easy "See what your Camera sees".
+        {% endblocktrans %}
+    </p>
+
+{% endblock %}
+{% block body_intro %}
+<div class="marketing">
+  <p class="marketing-byline"></p>
+  <div class="row">
+    <div class="span5">
+      <img class="bs-icon" src="{{ STATIC_URL }}bsf/glyphicons_042_group.png">
+      <h2>Monitor your pets</h2>
+
+      <p>Like you, we love our pets. Wouldn't it be great to see how Rover is doing?</p>
+    </div>
+    <div class="span6">
+      <img class="bs-icon" src="{{ STATIC_URL }}bsf/glyphicons_079_podium.png">
+      <h2>Easy to Set Up</h2>
+      <p>FilterCam.com is designed to make it super easy to set up new cameras</p>
+    </div>
+
+    <div class="span5">
+      <img class="bs-icon" src="{{ STATIC_URL }}bsf/glyphicons_163_iphone.png">
+      <h2>Works everywhere</h2>
+       	  <p>Designed to be used on the internet, Vid works on computers, smart phones, iPads, basically any device can be used to see your cameras' images through Vid</p>
+   
+    </div>
+   
+  </div><!--/row-->
+  <div class="row">
+    <div class="span5">
+
+      <img class="bs-icon" src="{{ STATIC_URL }}bsf/glyphicons_155_show_thumbnails.png">
+      <h2>Worried about your home</h2>
+      <p>Our homes are our most valuable asset. Vid makes it easy to see who comes and goes while you are away  </p>
+    
+    </div>
+    <div class="span6">
+      <img class="bs-icon" src="{{ STATIC_URL }}bsf/glyphicons_214_resize_small.png">
+      <h2>Garden Cam</h2>
+
+      <p> Do you just want to see your Garden when you are away from it. It's easy with Vid</p>
+    </div>
+    <div class="span5">
+      <img class="bs-icon" src="{{ STATIC_URL }}bsf/glyphicons_266_book_open.png">
+      <h2>Plug and Play</h2>
+      <p>With wifi enabled network cameras and Vid, you can move your camera around your house and know that it is still recording</p>
+    </div>
+
+  </div><!--/row-->
+  <div class="row">
+    <div class="span5">
+      <img class="bs-icon" src="{{ STATIC_URL }}bsf/glyphicons_082_roundabout.png">
+      <h2>Secure</h2>
+      <p>We take security very seriously. Your images are only visible by you</p>
+    </div>
+    <div class="span6">
+
+      <img class="bs-icon" src="{{ STATIC_URL }}bsf/glyphicons_009_magic.png">
+      <h2>Webcam</h2>
+      <p>If you want you can publish your images as a web cam on your website as a way to advertise your business</p>
+    </div>
+    <div class="span5">
+      <img class="bs-icon" src="{{ STATIC_URL }}bsf/less-small.png">
+      <h2>Alerts</h2>
+      <p>Built in alert system that will contact you by email, twitter or SMS </p>
+    </div>
+  </div><!--/row-->
+  <div class="row">
+    <div class="span4">
+      <img class="small-bs-icon" src="{{ STATIC_URL }}glyphicons/png/glyphicons_233_direction.png">
+      <h3>New</h3>
+      <p>Built with the future in mind</p>
+
+    </div>
+    <div class="span4">
+      <img class="small-bs-icon" src="{{ STATIC_URL }}glyphicons/png/glyphicons_241_flash.png">
+      <h3>Fast</h3>
+      <p>Uses cloud computing for a fast system</p>
+    </div>
+    
+    <div class="span4">
+      <img class="small-bs-icon" src="{{ STATIC_URL }}glyphicons/png/glyphicons_162_ipad.png">
+      <h3>Apple</h3>
+      <p>Works great on Apple devices</p>
+    </div>
+    
+    <div class="span4">
+      <img class="small-bs-icon" src="{{ STATIC_URL }}glyphicons/png/glyphicons_139_phone.png">
+      <h3>Apps</h3>
+      <p>We're working on great apps to use with FilterCam</p>
+    </div>
+  </div><!--/row-->
+</div>  
+      
+    {% if user.is_authenticated %}
+        {% url what_next as what_next_url %}
+        <p class="what_next">{% blocktrans %}Wondering <a href="{{ what_next_url }}" class="btn primary large">What Next</a>?{% endblocktrans %}</p>
+    {% else %}
+        {% url acct_login as login_url %}
+        {% ifsetting ACCOUNT_OPEN_SIGNUP %}
+            {% url acct_signup as signup_url %}
+            <p>{% blocktrans %}You can <a href="{{ login_url }}" class="btn">Log In</a> or <a href="{{ signup_url }}" class="btn primary">Sign Up</a> to try out the site.{% endblocktrans %}</p>
+        {% else %}
+            <p>{% blocktrans %}You can <a href="{{ login_url }}" class="btn primary large">Log In</a> or <a href="{{ signup_url }}" class="btn primary">Sign Up</a> to try out the site.{% endblocktrans %}</p>
+        {% endifsetting %}
+    {% endif %}
+  
+{% endblock %}
+
+  
+     
+        <div class="row">
+            <div class="span4">
+            {% block column-1 %}
+                <h2>Pet Cam</h2>
+                <p>Check in on your pet while you are at work</p>
+                <p><a class="btn" href="{%  url docs_overview %}">View details &raquo;</a></p>
+            {% endblock %}
+            </div>
+            <div class="span3">
+            {% block column-2 %}
+                <h2>Garage Cam</h2>
+                <p> Check on your car or boat while you are away </p>
+                <p><a class="btn" href="{%  url docs_overview %}">View details &raquo;</a></p>
+            {% endblock %}
+            </div>
+            <div class="span3">
+            {% block column-3 %}
+                <h2>Web Cam</h2>
+                <p>Provide a webcam on your home page. We make it easy</p>
+                <p><a class="btn" href="{%  url docs_overview %}">View details &raquo;</a></p>
+            {% endblock %}
+            </div>
+            <div class="span4">
+            {% block column-4 %}
+                <h2>Work Cam</h2>
+                <p>Having work done on your hose. Use Vid to check on progress </p>
+                <p><a class="btn" href="{%  url docs_overview %}">View details &raquo;</a></p>
+            {% endblock %}
+            </div>
+        </div>
+
+

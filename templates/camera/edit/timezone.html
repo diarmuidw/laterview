@@ -1,0 +1,29 @@
+{% extends "camera/edit/base.html" %}
+
+{% load i18n %}
+{% load ifsetting_tag %}
+{% load bootstrap_tags %}
+
+
+
+
+{% block head_title %}{% blocktrans %}Edit Camera Timezone{% endblocktrans %}{% endblock %}
+
+
+
+
+
+
+{% block camerabody %}
+
+    <h1>{% trans "Edit the Timezone" %}</h1>
+     
+	<form action="{% url camera_edit_timezone cam %}" method="post">{% csrf_token %}
+	{{ form.as_p }}
+	
+	
+	<input type="submit" value="Submit" />
+	</form>
+   
+    
+{% endblock %}

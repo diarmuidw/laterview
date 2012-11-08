@@ -1,0 +1,87 @@
+{% extends "camera/base.html" %}
+
+{% load i18n %}
+{% load ifsetting_tag %}
+
+
+{% block extra_head %}
+{% autoescape off %}
+
+<style type="text/css">
+
+/*Make sure your page contains a valid doctype at the top*/
+#simplegallery1{ //CSS for Simple Gallery Example 1
+position: relative; /*keep this intact*/
+visibility: hidden; /*keep this intact*/
+border: 10px solid darkred;
+}
+
+#simplegallery1 .gallerydesctext{ //CSS for description DIV of Example 1 (if defined)
+text-align: left;
+padding: 2px 5px;
+}
+
+</style>
+
+<script type="text/javascript" src="{{ STATIC_URL }}js/simplegallery.js?1111">
+
+/***********************************************
+* Simple Controls Gallery- (c) Dynamic Drive DHTML code library (www.dynamicdrive.com)
+* This notice MUST stay intact for legal use
+* Visit Dynamic Drive at http://www.dynamicdrive.com/ for this script and 100s more
+***********************************************/
+
+</script>
+
+<script type="text/javascript">
+
+var mygallery=new simpleGallery({
+	wrapperid: "simplegallery1", //ID of main gallery container,
+	dimensions: [640,480], //width/height of gallery in pixels. Should reflect dimensions of the images exactly
+	imagearray: [{% endautoescape %}
+{% for image in images %}["{{s3prefix}}{{image.key}}", "{{s3prefix}}{{image.key}}", "{{image.created}}", "{{image.created}}"],
+{% endfor %}
+
+{% autoescape off %}    
+	],
+	autoplay: [true, 1000, 1], //[auto_play_boolean, delay_btw_slide_millisec, cycles_before_stopping_int]
+	persist: false, //remember last viewed slide and recall within same session?
+	fadeduration: 500, //transition duration (milliseconds)
+	oninit:function(){ //event that fires when gallery has initialized/ ready to run
+		//Keyword "this": references current gallery instance (ie: try this.navigate("play/pause"))
+	},
+	preloadfirst:false,
+	onslide:function(curslide, i){ //event that fires after each slide is shown
+		//Keyword "this": references current gallery instance
+		//curslide: returns DOM reference to current slide's DIV (ie: try alert(curslide.innerHTML)
+		//i: integer reflecting current image within collection being shown (0=1st image, 1=2nd etc)
+		//alert(this.setting.imagearray[i][3]);
+	}
+})
+
+</script>
+{% endautoescape %}
+{% endblock %}
+
+
+
+
+{% block head_title %}{% blocktrans %}Your Images{% endblocktrans %}{% endblock %}
+
+
+
+{% block body %}
+
+    <h1>{% trans "Camera -" %} {{camera.description}}</h1>
+    
+    
+    <div id="simplegallery1"></div>
+    
+    {% if images %}
+
+ 
+    {% else %}
+ 		{% trans "No Images yet." %}
+    {% endif %}
+    
+{% endblock %}

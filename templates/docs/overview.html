@@ -1,0 +1,68 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% load ifsetting_tag %}
+
+{% block head_title %}{% trans "What Next?" %}{% endblock %}
+
+
+
+{% block body %}
+
+    <h1></h1>
+
+
+<!-- Masthead
+================================================== -->
+<header class="jumbotron subhead" id="overview">
+  <h1>{% trans "What is FilterCam.com?" %}</h1>
+     <p class="lead">
+        Network cameras work on your internet and are easy to set up and see the image produced</br>
+        But then you go to work and you can't see the camera with your computer. ( We like firewalls!!)</br>
+        However, these cameras all have FTP upload which means they can push images up to the internet. </br>
+        But most people don't have a place to store these images and if they do, no easy way to view them. </br>
+        FilterCam.com creates an FTP username and password unique to your camera. You can then set up your camera to use these credentials </br>
+        Once your camera is uploading, you browse to FilterCam.com from anywhere in the world, login and and see your images. </br>
+        </br>
+        Your images are secure. </br>
+        Do you want to see what your <a href="{%  url docs_petcam %}">pet</a> is doing while you are away?</br>
+        How about watching your drive way for suspicious activity?</br>
+        Do you want want to monitor your holiday home ?</br>
+        How about setting up a <a href="{%  url docs_webcam %}">webcam</a> quickly?</br>
+        FilterCam.com can help you do all this by providing an easy to use recording system that runs on our webservers</br>
+        Just buy one of the many cheap internet cameras and set it up with the details we provide you and you can be monitoring your
+        property remotely in minutes</br>
+        Alternatively, buy a camera from us at a great price and we will set it up for you </br>
+    </p>
+
+</header>
+
+
+<ul class="thumbnails bootstrap-examples">
+  <li class="span4">
+
+ 
+      <img src="assets/img/examples/bootstrap-example-hero.jpg" alt="">
+    </a>
+    <h3>Basic marketing site</h3>
+    <p>Featuring a hero unit for a primary message and three supporting elements.</p>
+  </li>
+  <li class="span4">
+    <a class="thumbnail" href="examples/fluid.html">
+
+      <img src="assets/img/examples/bootstrap-example-fluid.jpg" alt="">
+    </a>
+    <h3>Fluid layout</h3>
+    <p>Uses our new responsive, fluid grid system to create seamless liquid layout.</p>
+  </li>
+  <li class="span4">
+    <a class="thumbnail" href="examples/starter-template.html">
+      <img src="assets/img/examples/bootstrap-example-starter.jpg" alt="">
+
+    </a>
+    <h3>Starter template</h3>
+    <p>A barebones HTML document with all the Bootstrap CSS and javascript included.</p>
+  </li>
+</ul>
+
+{% endblock %}

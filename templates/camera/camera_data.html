@@ -1,0 +1,38 @@
+{% extends "camera/base.html" %}
+
+{% load i18n %}
+{% load ifsetting_tag %}
+
+
+
+
+
+{% block head_title %}{% blocktrans %}Your Camera Data{% endblocktrans %}{% endblock %}
+
+
+
+{% block body %}
+
+    <h1>{% trans "Camera -" %} {{camera.description}}</h1>
+    <b><a href="/cameras/data/{{camera.name}}/{{byear}}/{{bmonth}}/{{bday}}/">Day Before</a></b><b><a href="/cameras/data/{{camera.name}}/{{byear}}/{{bmonth}}/{{aday}}">Day After</a></b>
+    {% if data %}
+        <table cellpadding="5" cellspacing="0" border="0" class="blog-list" width="100%">
+            <th>Date</th><th>Images</th>
+
+            {% for d in data %}
+                <tr class="{% cycle odd,even %}">
+                <td><b><a href="/cameras/images/{{camera.name}}/{{year}}/{{month}}/{{day}}/{{d.hour}}">{{d.date}}, {{d.hour}} -- {{ d.counts }}</a></b><br /></td>
+              	<td>
+              	<img src="{{s3prefix}}{{d.firstimage}}" height ='48' width = '64' />
+              	
+              	</td>
+              	
+
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        {% trans "No data yet." %}
+    {% endif %}
+    
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "camera/base.html" %}
+
+{% load i18n %}
+{% load ifsetting_tag %}
+
+
+
+
+
+{% block head_title %}{% blocktrans %}Your Cameras{% endblocktrans %}{% endblock %}
+
+
+
+{% block body %}
+
+    <h1>{% trans "Your Cameras" %}</h1>
+    
+    {% if cameras %}
+        <table cellpadding="5" cellspacing="0" border="0" class="blog-list" width="100%">
+            <th>Name</th>
+            <th>Description</th>
+            <th>Password</th>
+            <th>Latest Image</th>
+            <th>Today's Images</th>
+
+            {% for cam in cameras %}
+                <tr class="{% cycle odd,even %}">
+                <td><b><a href="/cameras/edit/{{cam.name}}">{{ cam.name }}</a></b><br /></td>
+                <td><b>{{ cam.description }}</b><br /></td>
+                
+                <td><b>{{ cam.password }}</b><br /></td>
+                <td><b>
+                {% if cam.latestimage %}
+                <a href="{{s3prefix}}{{cam.latestimage}}" target="_blank">
+                <img src="{{s3prefix}}{{cam.latestimage}}" height ='48' width = '64' />  
+                </a>  
+				{% else %}
+				   <img src="{{s3prefix}}static/blank64x48.jpg" height ='48' width = '64' />    
+				{% endif %}
+                
+                    </b><br /></td>
+                <td><b><a href="/cameras/data/{{cam.name}}/{{dt}}/">{{ cam.name }}</a></b><br /></td>
+             
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        {% trans "No Cameras yet." %}
+    {% endif %}
+    
+{% endblock %}

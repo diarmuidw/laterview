@@ -1,0 +1,44 @@
+{% extends "theme_base.html" %}
+
+{% load metron_tags %}
+{% load i18n %}
+
+{% block nav %}
+<ul>{% spaceless %}
+			<li><a href="{%  url docs_overview %}">Overview</a></li>
+
+
+{% endspaceless %}</ul>
+
+    {% if user.is_authenticated %}
+        <ul>{% spaceless %}
+            
+        <li id="tab_notices"><a href="{% url notification_notices %}">{% trans "Notices" %}{% if notice_unseen_count %} ({{ notice_unseen_count }}){% endif %}</a></li>
+         
+        <li>
+            <a href="#" class="menu">Cameras</a>
+            <ul class="menu-dropdown">
+                <li><a href="{%  url camera_list_yours %}">Your Cameras</a></li>
+                <li class="divider"></li>
+                <li><a href="{%  url camera_add %}">Add A Camera</a></li>
+            </ul>
+        </li>
+        {% endspaceless %}</ul>
+    {% endif %}
+{% endblock %}
+
+
+
+
+  
+{% block footer %}
+    {% include "_footer.html" %}
+{% endblock %}
+
+
+
+
+{% block extra_body_base %}
+    {% analytics %}
+    {% block extra_body %}{% endblock %}
+{% endblock %}

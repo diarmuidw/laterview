@@ -1,0 +1,26 @@
+{% extends "camera/base.html" %}
+
+{% load i18n %}
+{% load ifsetting_tag %}
+
+
+
+
+
+{% block head_title %}{% blocktrans %}Add A Camera{% endblocktrans %}{% endblock %}
+
+
+
+{% block body %}
+
+    <h1>{% trans "Add A Camera" %}</h1>
+    
+	<form action="{% url camera_add %}" method="post">{% csrf_token %}
+	{{ form.as_p }}
+	
+	<strong>You just add in a description and we will generate the FTP User and password for you<strong></strong></strong></br>
+	<input type="submit" value="Submit" />
+	</form>
+
+    
+{% endblock %}
