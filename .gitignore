@@ -1,0 +1,20 @@
+#python specific
+*.pyc
+## generic files to ignore
+*.pyo
+*~
+*.lock
+*.DS_Store
+*.swp
+*.out
+local_settings.py
+.installed.cfg
+bin
+develop-eggs
+dist
+downloads
+eggs
+parts
+src/*.egg-info
+lib
+lib64
