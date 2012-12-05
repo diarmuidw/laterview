@@ -3,7 +3,7 @@ from mongoengine import *
 
 import datetime
 
-connect ('imagetest',host='ds029217.mongolab.com', port =29217, username='roletest', password = 'roletestpassw0rd')
+connect ('imagetest',host='xxxxx.mongolab.com', port =29217, username='xxxx', password = 'xxxx')
 
 
 from mongoobjects  import *

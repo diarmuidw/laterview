@@ -33,12 +33,12 @@ log.info("Starting the server")
 domain_name ='com_bluekulu_usertest'
 domain_images ='com_bluekulu_imagetest3'
 
-connect ('imagetest',host='ds029217.mongolab.com', port =29217, username='roletest', password = 'roletestpassw0rd')
+connect ('imagetest',host='xxx.mongolab.com', port =29217, username='xxxxx', password = 'xxxxx')
 
 def upload(file, username):
     try:
         log.info("starting Upload %s"%file)
-        conn = S3Connection('AKIAJMUAJ2WPSWLPPYBA', '/9PeHwNvhw1Ml8NpnhFREN9+qaot9CWNJUez22Nb')
+        conn = S3Connection('xxxx', 'xxxxxx')
         #bucket = conn.create_bucket('com_bluekulu_imagetest3') 
         bucket = conn.get_bucket('com_bluekulu_imagetest3')
 

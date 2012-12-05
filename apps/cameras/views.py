@@ -48,7 +48,6 @@ def add_camera(request):
         form = CameraForm(request.POST) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
             try:
-                #connect ('imagetest',host='ds029217.mongolab.com', port =29217, username='roletest', password = 'roletestpassw0rd')
                 connect (settings.MONGODATABASENAME,host=settings.MONGOHOST, port =settings.MONGOPORT, username=settings.MONGOUSERNAME, password = settings.MONGOPASSWORD)
 
              

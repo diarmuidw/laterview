@@ -35,15 +35,7 @@ DATABASES = {
         "HOST": "",                             # Set to empty string for localhost. Not used with sqlite3.
         "PORT": "",                             # Set to empty string for default. Not used with sqlite3.
     },
-    'mongo' : {
-      'ENGINE' : 'django_mongodb_engine',
-      'NAME' : 'imagetest',
-      'HOST':'ds029217.mongolab.com',
-      'PORT':'29217',
-      'USER':'imagetest',
-      'PASSWORD':'imagetest'
-      
-   }
+
 }
 #connection = Connection('mongodb://imagetest:imagetest@ds029217.mongolab.com:29217/imagetest')
 # Local time zone for this installation. Choices can be found here:

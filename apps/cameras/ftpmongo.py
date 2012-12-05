@@ -30,7 +30,7 @@ log.setLevel(logging.INFO)
 log.info("Starting the server")
 
 
-connect ('imagetest',host='ds029217.mongolab.com', port =29217, username='roletest', password = 'roletestpassw0rd')
+connect ('imagetest',host='xxxxx.mongolab.com', port =29217, username='xxxx', password = 'xxxx')
 
 #connect ('imagetest',host='ftp1.vid.ie', port =27017, username='imagetest', password = 'imagetest')
 
