@@ -6,7 +6,6 @@ PIL==1.1.7
 Pinax==0.9a2
 PyJWT==0.1.2
 PyYAML==3.10
-Pycluster==1.50
 Pygments==1.4
 Sphinx==1.1.2
 Werkzeug==0.8.3
@@ -51,7 +50,5 @@ python-twitter==0.8.2
 pytz==2011n
 requests==0.10.4
 simplejson==2.6.2
-tornado==2.2
-twilio==3.3.11
 twitter==1.9.0
 wsgiref==0.1.2
