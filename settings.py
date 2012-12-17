@@ -179,6 +179,7 @@ INSTALLED_APPS = [
     # My Code
     "cameras",
     'calls',
+    'gunicorn'
     
 ]
 
