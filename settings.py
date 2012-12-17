@@ -178,8 +178,6 @@ INSTALLED_APPS = [
     
     # My Code
     "cameras",
-    
-
     'calls',
     
 ]
@@ -226,11 +224,6 @@ S3PREFIX = 'http://s3.amazonaws.com/com_bluekulu_imagetest3/'
 
 S3PREFIX = 'http://ftp1.vid.ie/images'
 
-MONGODATABASENAME = 'imagetest'
-MONGOHOST='ds029217.mongolab.com'
-MONGOPORT =29217
-MONGOUSERNAME='roletest'
-MONGOPASSWORD = 'roletestpassw0rd'
 
 LOGGING = {
     "version": 1,

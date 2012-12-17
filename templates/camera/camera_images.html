@@ -44,9 +44,9 @@ var mygallery=new simpleGallery({
 
 {% autoescape off %}    
 	],
-	autoplay: [true, 1000, 1], //[auto_play_boolean, delay_btw_slide_millisec, cycles_before_stopping_int]
+	autoplay: [true, 100, 1], //[auto_play_boolean, delay_btw_slide_millisec, cycles_before_stopping_int]
 	persist: false, //remember last viewed slide and recall within same session?
-	fadeduration: 500, //transition duration (milliseconds)
+	fadeduration: 5, //transition duration (milliseconds)
 	oninit:function(){ //event that fires when gallery has initialized/ ready to run
 		//Keyword "this": references current gallery instance (ie: try this.navigate("play/pause"))
 	},
