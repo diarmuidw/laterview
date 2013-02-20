@@ -30,6 +30,7 @@ import mongoobjects
 import datetime
 import string
 import random
+import redis
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for x in range(size))
@@ -156,27 +157,38 @@ def your_camera_images(request,cam_id, year= 0, month = 0, day= 0, hour = 0, tem
         #2013/02/20/02/
         linkbefore = '%s/%02d/%02d/%02d'%(dbefore.year, dbefore.month, dbefore.day,dbefore.hour)
         linkafter = '%s/%02d/%02d/%02d'%(dafter.year, dafter.month, dafter.day,dafter.hour)
-        print linkbefore
-        print linkafter
+
         user = mongoobjects.User.objects().filter(name=request.user.username)
         cams = mongoobjects.Camera.objects().filter(owner = user[0], name = cam_id)
 
         camimages = mongoobjects.Image.objects().filter(camera = cams[0], day = '%04d%02d%02d'%(int(year),int(month),int(day)), hour = hour)
         for i in camimages:
             images.append(i.key)
-
-
+        try:
+            data = "[['year','data'],['2004',  1000]]"
+            r = redis.StrictRedis(host='localhost', port=6379, db=0)
+            for i in range(0,24):
+                data = data + ",['%02d',%s]"%(i,r.get('%s~%s~%02d~%02d~%02d')%(cam_id,year,month, day, i))
+                
+            data = data +"]"
+            
+            print data    
+                
+            
+        except Exception, ex:
+            print ex
+            
     
    
         return render_to_response(template_name, {
-            "camera": cams[0], 'cam_id':cam_id, "images":camimages,"linkbefore":linkbefore, "linkafter":linkafter, 's3prefix':s3prefix
+            "camera": cams[0], "data":data, 'cam_id':cam_id, "images":camimages,"linkbefore":linkbefore, "linkafter":linkafter, 's3prefix':s3prefix
             }, context_instance=RequestContext(request))
     
     except Exception, ex:
         print ex
         return render_to_response("camera/noimage.html", {}, context_instance=RequestContext(request))
 @login_required
-def your_camera_data(request,cam_id, year = 0, month =0, day= 0, template_name="camera/camera_data.html"):
+def your_camera_data(request, cam_id, year = 0, month =0, day= 0, template_name="camera/camera_data.html"):
     connect (settings.MONGODATABASENAME,host=settings.MONGOHOST, port =settings.MONGOPORT, username=settings.MONGOUSERNAME, password = settings.MONGOPASSWORD)
     data = []
     cdata = {}
