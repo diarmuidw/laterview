@@ -145,26 +145,36 @@ def your_cameras(request, template_name="camera/cameras.html"):
 def your_camera_images(request,cam_id, year= 0, month = 0, day= 0, hour = 0, template_name="camera/camera_images.html"):
     connect (settings.MONGODATABASENAME,host=settings.MONGOHOST, port =settings.MONGOPORT, username=settings.MONGOUSERNAME, password = settings.MONGOPASSWORD)
     images = []
+    
     try:
+        d = datetime.datetime(int(year),int(month),int(day),int(hour),0)
+        minusone = datetime.timedelta(minutes =-60)
+        plusone = datetime.timedelta(minutes =+60)
         
+        dbefore = d+minusone
+        dafter = d+plusone
+        #2013/02/20/02/
+        linkbefore = '%s/%02d/%02d/%02d'%(dbefore.year, dbefore.month, dbefore.day,dbefore.hour)
+        linkafter = '%s/%02d/%02d/%02d'%(dafter.year, dafter.month, dafter.day,dafter.hour)
+        print linkbefore
+        print linkafter
         user = mongoobjects.User.objects().filter(name=request.user.username)
         cams = mongoobjects.Camera.objects().filter(owner = user[0], name = cam_id)
 
         camimages = mongoobjects.Image.objects().filter(camera = cams[0], day = '%04d%02d%02d'%(int(year),int(month),int(day)), hour = hour)
         for i in camimages:
-        
             images.append(i.key)
 
 
+    
+   
+        return render_to_response(template_name, {
+            "camera": cams[0], 'cam_id':cam_id, "images":camimages,"linkbefore":linkbefore, "linkafter":linkafter, 's3prefix':s3prefix
+            }, context_instance=RequestContext(request))
+    
     except Exception, ex:
         print ex
-    
-    print cams[0]
-    return render_to_response(template_name, {
-        "camera": cams[0], "images":camimages, 's3prefix':s3prefix
-        }, context_instance=RequestContext(request))
-    
-
+        return render_to_response("camera/noimage.html", {}, context_instance=RequestContext(request))
 @login_required
 def your_camera_data(request,cam_id, year = 0, month =0, day= 0, template_name="camera/camera_data.html"):
     connect (settings.MONGODATABASENAME,host=settings.MONGOHOST, port =settings.MONGOPORT, username=settings.MONGOUSERNAME, password = settings.MONGOPASSWORD)
@@ -292,7 +302,7 @@ class CameraTimeZoneForm(forms.Form):
 @login_required
 def camera_timezone(request, cam_id, template_name="camera/edit/timezone.html"):
 
-    print cam_id
+
     user = None
     cam = None
     connect (settings.MONGODATABASENAME,host=settings.MONGOHOST, port =settings.MONGOPORT, username=settings.MONGOUSERNAME, password = settings.MONGOPASSWORD)
