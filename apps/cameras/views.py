@@ -164,11 +164,19 @@ def your_camera_images(request,cam_id, year= 0, month = 0, day= 0, hour = 0, tem
         camimages = mongoobjects.Image.objects().filter(camera = cams[0], day = '%04d%02d%02d'%(int(year),int(month),int(day)), hour = hour)
         for i in camimages:
             images.append(i.key)
+        
         try:
-            data = "[['year','data'],['2004',  1000]]"
+            data = "[['Hour','Number of Images']"
+            print data
             r = redis.StrictRedis(host='localhost', port=6379, db=0)
+            print r
             for i in range(0,24):
-                data = data + ",['%02d',%s]"%(i,r.get('%s~%s~%02d~%02d~%02d')%(cam_id,year,month, day, i))
+                rdata =  '%s~%s~%02d~%02d~%02d'%(cam_id,year,int(month), int(day), i)
+                print rdata
+                numimages = r.get(rdata)
+                if numimages == None:
+                    numimages = 0
+                data = data + ",['%02d',%s]"%(i,numimages)
                 
             data = data +"]"
             

@@ -69,7 +69,7 @@ var mygallery=new simpleGallery({
         var data = google.visualization.arrayToDataTable({{data}});
 
         var options = {
-          title: 'Company Performance',
+         
           hAxis: {title: 'Year', titleTextStyle: {color: 'red'}}
         };
 
@@ -95,7 +95,7 @@ var mygallery=new simpleGallery({
 {% block body %}
 
     <h1>{% trans "Camera -" %} {{camera.description}}</h1>
-    <div id="chart_div" style="width: 900px; height: 500px;"></div>
+    <div id="chart_div" style="width: 900px; height: 200px;"></div>
     
 <b><a href="/cameras/images/{{cam_id}}/{{linkbefore}}/">Hour Before</a></b><b><a href="/cameras/images/{{cam_id}}/{{linkafter}}">Hour After</a></b>
     
