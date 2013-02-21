@@ -22,6 +22,7 @@
             <th>Password</th>
             <th>Latest Image</th>
             <th>Today's Images</th>
+            <th>Current Images</th>
 
             {% for cam in cameras %}
                 <tr class="{% cycle odd,even %}">
@@ -41,7 +42,7 @@
                     </b><br /></td>
                 <td><b><a href="/cameras/data/{{cam.name}}/{{dt}}/">{{ cam.name }}</a></b><br /></td>
              	<td>
-             	<a href="/cameras/images/{{cam.name}}/{{dt}}/10">{{ dt}}</a>
+             	<a href="/cameras/images/{{cam.name}}/{{dt}}/{{currenthour}}">Click Here</a>
              	
              	</td>
                 </tr>

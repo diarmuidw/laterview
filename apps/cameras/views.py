@@ -122,6 +122,7 @@ def your_cameras(request, template_name="camera/cameras.html"):
         hm = nowdt.strftime('%H/%M')
         dt = nowdt.strftime('%Y/%m/%d')
         fmt = '%Y-%m-%d %H:%M:%S %Z%z'
+        ch  = nowdt.strftime('%H')
         
 #        
 #        
@@ -138,8 +139,10 @@ def your_cameras(request, template_name="camera/cameras.html"):
         print ex
 
     return render_to_response(template_name, {
-        "cameras": cams,"dt":dt, "s3prefix":s3prefix
-        }, context_instance=RequestContext(request))
+        "cameras": cams,"dt":dt,
+         "currenthour": ch,
+          "s3prefix":s3prefix
+          }, context_instance=RequestContext(request))
     
 
 @login_required
