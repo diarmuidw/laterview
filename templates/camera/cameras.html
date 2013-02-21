@@ -17,34 +17,29 @@
     
     {% if cameras %}
         <table cellpadding="5" cellspacing="0" border="0" class="blog-list" width="100%">
-            <th>Name</th>
+            
             <th>Description</th>
-            <th>Password</th>
+           
             <th>Latest Image</th>
-            <th>Today's Images</th>
-            <th>Current Images</th>
+            
+          
 
             {% for cam in cameras %}
                 <tr class="{% cycle odd,even %}">
-                <td><b><a href="/cameras/edit/{{cam.name}}">{{ cam.name }}</a></b><br /></td>
-                <td><b>{{ cam.description }}</b><br /></td>
+                <td><b><a href="/cameras/edit/{{cam.name}}">{{ cam.description }}</a></b><br /></td>
+               
                 
-                <td><b>{{ cam.password }}</b><br /></td>
+                
                 <td><b>
                 {% if cam.latestimage %}
-                <a href="{{s3prefix}}{{cam.latestimage}}" target="_blank">
+                <a  href="/cameras/images/{{cam.name}}/{{dt}}/{{currenthour}}">
                 <img src="{{s3prefix}}{{cam.latestimage}}" height ='48' width = '64' />  
                 </a>  
 				{% else %}
 				   <img src="{{s3prefix}}static/blank64x48.jpg" height ='48' width = '64' />    
 				{% endif %}
                 
-                    </b><br /></td>
-                <td><b><a href="/cameras/data/{{cam.name}}/{{dt}}/">{{ cam.name }}</a></b><br /></td>
-             	<td>
-             	<a href="/cameras/images/{{cam.name}}/{{dt}}/{{currenthour}}">Click Here</a>
-             	
-             	</td>
+                    </b></td>
                 </tr>
             {% endfor %}
         </table>
