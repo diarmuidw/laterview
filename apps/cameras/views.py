@@ -419,3 +419,74 @@ def camera_password(request, cam_id, template_name="camera/edit/password.html"):
         'form': form, 'cam': cam.name, 'password': password
     },context_instance=RequestContext(request))
 
+
+
+
+'''
+Camera filter
+ '''
+from django.forms.fields import DateField, ChoiceField, MultipleChoiceField
+from django.forms.widgets import RadioSelect, CheckboxSelectMultiple
+from django.forms.extras.widgets import SelectDateWidget
+
+
+filters = (('country.acv', 'Country'),
+                            ('crossprocess.acv', 'Cross Process'),
+                            ('desert.acv', 'Desert'),
+                            ('forget.acv', 'Forget'),
+                            ('Hefe.acv', 'Hefe'),
+                            ('lumo.acv', 'lumo')
+                            
+                            
+                            
+                            )
+
+class CameraFilterForm(forms.Form):
+    #id = forms.CharField(max_length=100)
+    #timezone = forms.CharField()
+    filter = forms.ChoiceField(required=False, widget=RadioSelect, choices=filters)
+    
+@login_required
+def camera_filter(request, cam_id, template_name="camera/edit/filter.html"):
+
+
+    user = None
+    cam = None
+    connect (settings.MONGODATABASENAME,host=settings.MONGOHOST, port =settings.MONGOPORT, username=settings.MONGOUSERNAME, password = settings.MONGOPASSWORD)
+    filter = ''
+    try:
+        user = mongoobjects.User.objects().filter(name=request.user.username)
+        cams = mongoobjects.Camera.objects().filter(owner = user[0], name = cam_id)
+        cam = cams[0]
+        originaltz =  cam.filter
+        filter = cam.filter
+        
+    except Exception, ex:
+        cam.filter = 'None'
+
+    if request.method == 'POST': # If the form has been submitted...
+        form = CameraFilterForm(request.POST) # A form bound to the POST data
+        if form.is_valid(): # All validation rules pass
+            try:
+                filter = form.cleaned_data['filter']
+                print filter
+                #check if it is a valid filter
+                cam.filter = filter
+                cam.save()
+
+                messages.add_message(request, messages.INFO,
+                        u"Updated Camera filter to %s" %  form.cleaned_data['filter']
+                        )
+            except Exception, ex:
+                print ex
+                messages.add_message(request, messages.ERROR,
+                        u"There was a problem updating the filter"
+                        )
+                filter = originaltz
+    else:
+        #CameraFormSet = formset_factory(CamerafilterForm, extra=1)
+        form = CameraFilterForm(initial={'filter': filter}) # An unbound form
+    
+    return render_to_response(template_name, {
+        'form': form, 'cam': cam.name, 'filters': cam.filter
+    },context_instance=RequestContext(request))

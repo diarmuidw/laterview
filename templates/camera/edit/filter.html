@@ -1,0 +1,30 @@
+{% extends "camera/edit/base.html" %}
+
+{% load i18n %}
+{% load ifsetting_tag %}
+{% load bootstrap_tags %}
+
+
+
+
+{% block head_title %}{% blocktrans %}Edit Camera Filter{% endblocktrans %}{% endblock %}
+
+
+
+
+
+
+{% block camerabody %}
+
+    <h1>{% trans "Edit the Filter" %}</h1>
+     
+	<form action="{% url camera_edit_filter cam %}" method="post">{% csrf_token %}
+	<div>
+	{{ form.as_table }}
+	</div>
+	
+	<input type="submit" value="Submit" />
+	</form>
+   
+    
+{% endblock %}

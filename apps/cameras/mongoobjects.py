@@ -23,6 +23,7 @@ class Camera(Document):
     publickey = StringField(required=False)
     publicdescription = StringField(required=False)
     timezone =  StringField(required=False)
+    filter  =  StringField(required=False)
     meta = {
         'ordering': ['-created']
     }

@@ -23,4 +23,5 @@ urlpatterns = patterns("",
     url(r"^edit/password/(?P<cam_id>\w+)$", 'cameras.views.camera_password', name="camera_edit_password"),
     url(r"^edit/timezone/(?P<cam_id>\w+)$", 'cameras.views.camera_timezone', name="camera_edit_timezone"),
     url(r"^edit/security/(?P<cam_id>\w+)$", 'cameras.views.camera_security', name="camera_edit_security"),
+    url(r"^edit/filter/(?P<cam_id>\w+)$", 'cameras.views.camera_filter', name="camera_edit_filter"),
 )
