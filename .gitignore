@@ -17,4 +17,5 @@ eggs
 parts
 src/*.egg-info
 lib
+dev.db
 lib64
