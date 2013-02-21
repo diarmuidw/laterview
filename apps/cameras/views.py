@@ -426,7 +426,7 @@ def camera_password(request, cam_id, template_name="camera/edit/password.html"):
 Camera filter
  '''
 from django.forms.fields import DateField, ChoiceField, MultipleChoiceField
-from django.forms.widgets import RadioSelect, CheckboxSelectMultiple
+from django.forms.widgets import RadioSelect, CheckboxSelectMultiple, Select
 from django.forms.extras.widgets import SelectDateWidget
 
 
@@ -444,7 +444,7 @@ filters = (('none','No Filter'),('country.acv', 'Country'),
 class CameraFilterForm(forms.Form):
     #id = forms.CharField(max_length=100)
     #timezone = forms.CharField()
-    filter = forms.ChoiceField(required=False, widget=RadioSelect, choices=filters)
+    filter = forms.ChoiceField(required=False, widget=Select, choices=filters)
     
 @login_required
 def camera_filter(request, cam_id, template_name="camera/edit/filter.html"):
