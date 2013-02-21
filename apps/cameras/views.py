@@ -76,7 +76,7 @@ def add_camera(request):
 
                 name = id_generator(6)
                 password = id_generator(6)
-                c = mongoobjects.Camera(owner = user, name = 'C_%s'%name, timezone = timezone, password = 'P_%s'%password,
+                c = mongoobjects.Camera(owner = user, name = 'C_%s'%name, filter='none', timezone = timezone, password = 'P_%s'%password,
                                          path = '/tmp/t1/t2/t4/%s/'%'C_%s'%name, perm = 'elradfmw' , description = form.cleaned_data['description'] )
                 c.save()
                 messages.add_message(request, messages.INFO,
@@ -430,7 +430,7 @@ from django.forms.widgets import RadioSelect, CheckboxSelectMultiple
 from django.forms.extras.widgets import SelectDateWidget
 
 
-filters = (('country.acv', 'Country'),
+filters = (('none','No Filter'),('country.acv', 'Country'),
                             ('crossprocess.acv', 'Cross Process'),
                             ('desert.acv', 'Desert'),
                             ('forget.acv', 'Forget'),
@@ -475,7 +475,7 @@ def camera_filter(request, cam_id, template_name="camera/edit/filter.html"):
                 cam.save()
 
                 messages.add_message(request, messages.INFO,
-                        u"Updated Camera filter to %s" %  form.cleaned_data['filter']
+                        u"Updated Camera filter" # to %s" %  form.cleaned_data['filter']
                         )
             except Exception, ex:
                 print ex

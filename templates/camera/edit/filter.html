@@ -20,7 +20,7 @@
      
 	<form action="{% url camera_edit_filter cam %}" method="post">{% csrf_token %}
 	<div>
-	{{ form.as_table }}
+	{{ form.as_p }}
 	</div>
 	
 	<input type="submit" value="Submit" />
