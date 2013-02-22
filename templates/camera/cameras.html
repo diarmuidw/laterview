@@ -27,9 +27,6 @@
             {% for cam in cameras %}
                 <tr class="{% cycle odd,even %}">
                 <td><b><a href="/cameras/edit/{{cam.name}}">{{ cam.description }}</a></b><br /></td>
-               
-                
-                
                 <td><b>
                 {% if cam.latestimage %}
                 <a  href="/cameras/images/{{cam.name}}/{{dt}}/{{currenthour}}">

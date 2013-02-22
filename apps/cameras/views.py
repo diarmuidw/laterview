@@ -1,7 +1,7 @@
 # Create your views here.
 
 
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.http import HttpResponseRedirect, Http404, QueryDict
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
@@ -429,7 +429,7 @@ def camera_password(request, cam_id, template_name="camera/edit/password.html"):
 Camera filter
  '''
 from django.forms.fields import DateField, ChoiceField, MultipleChoiceField
-from django.forms.widgets import RadioSelect, CheckboxSelectMultiple, Select
+from django.forms.widgets import RadioSelect, CheckboxSelectMultiple, Select, CheckboxInput
 from django.forms.extras.widgets import SelectDateWidget
 
 
@@ -485,7 +485,7 @@ def camera_filter(request, cam_id, template_name="camera/edit/filter.html"):
                 messages.add_message(request, messages.ERROR,
                         u"There was a problem updating the filter"
                         )
-                filter = originaltz
+                
     else:
         #CameraFormSet = formset_factory(CamerafilterForm, extra=1)
         form = CameraFilterForm(initial={'filter': filter}) # An unbound form
@@ -493,3 +493,63 @@ def camera_filter(request, cam_id, template_name="camera/edit/filter.html"):
     return render_to_response(template_name, {
         'form': form, 'cam': cam.name, 'filters': cam.filter
     },context_instance=RequestContext(request))
+
+
+
+delchoices = (('delete','Delete'))
+
+class CameraDeleteForm(forms.Form):
+    #id = forms.CharField(max_length=100)
+    #timezone = forms.CharField()
+    #delete = forms.ChoiceField(required=True, widget=CheckboxInput, choices=delchoices)
+    pass
+    
+@login_required
+def camera_delete(request, cam_id, template_name="camera/edit/delete.html"):
+
+
+    user = None
+    cam = None
+    connect (settings.MONGODATABASENAME,host=settings.MONGOHOST, port =settings.MONGOPORT, username=settings.MONGOUSERNAME, password = settings.MONGOPASSWORD)
+    try:
+        user = mongoobjects.User.objects().filter(name=request.user.username)
+        cams = mongoobjects.Camera.objects().filter(owner = user[0], name = cam_id)
+        cam = cams[0]    
+   
+        if request.method == 'POST': # If the form has been submitted...
+            print 'aaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+            form = CameraDeleteForm(request.POST) # A form bound to the POST data
+            print 'bbbbbbbbbbbbbbbbbbbbbbbbbb'
+            if form.is_valid(): # All validation rules pass
+                try:
+    
+                    #delete = form.cleaned_data['delete']
+                    #rint delete
+                    #check if it is a valid filter
+                    cam.delete()
+    
+                    messages.add_message(request, messages.INFO,
+                            u"Camera Deleted" # to %s" %  form.cleaned_data['filter']
+                            )
+                except Exception, ex:
+                    print ex
+                    messages.add_message(request, messages.ERROR,
+                            u"There was a problem deleting the camera"
+                            )
+                return redirect('camera_list_yours')
+                   
+        else:
+            #CameraFormSet = formset_factory(CamerafilterForm, extra=1)
+            form = CameraDeleteForm() # An unbound form
+        
+        return render_to_response(template_name, {
+            'form': form, 'cam': cam.name, 'filters': 'aaa'
+        },context_instance=RequestContext(request))
+    except:
+        messages.add_message(request, messages.ERROR,
+                u"Mmmmmm. Something not right happened!"
+                )
+        return redirect('camera_list_yours')        
+    
+    
+    
