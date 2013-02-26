@@ -57,7 +57,7 @@ logger = logging.getLogger(__name__)
 @twilio_view
 def hello(request):
     """A simple test view that returns a HttpResponse object."""
-    logger.debug( "Calling hello")
+    logger.debug("Calling hello")
     try:
         r = Response()
 
@@ -67,15 +67,15 @@ def hello(request):
             Press any other key to start over.""")
         return r
     except Exception, ex:
-        logger.debug( ex)
-        return HttpResponse('<Response><Say>Error in Hello</Say></Response>',mimetype='text/xml')
+        logger.debug(ex)
+        return HttpResponse('<Response><Say>Error in Hello</Say></Response>', mimetype='text/xml')
 
 @twilio_view
 def gather(request):
     
-    logger.debug( "Calling gather")
-    d =request.GET.get('Digits')
-    logger.debug( "Digit Pressed= %s"%d)
+    logger.debug("Calling gather")
+    d = request.GET.get('Digits')
+    logger.debug("Digit Pressed= %s" % d)
     try:
         r = Response()
         if d == "1":
@@ -100,7 +100,7 @@ def gather(request):
             return HttpResponseRedirect(reverse("calls_hello"))
     except Exception, ex:
         logger.debug(ex)
-        return HttpResponse('<Response><Say>Error in Gather</Say></Response>',mimetype='text/xml')
+        return HttpResponse('<Response><Say>Error in Gather</Say></Response>', mimetype='text/xml')
 
         
     
@@ -111,7 +111,7 @@ def record(request):
     r = Response()
     try:
         
-        u =  request.POST['RecordingUrl']
+        u = request.POST['RecordingUrl']
 
         r.say("Thanks for the message... take a listen to your message .")
         r.play(u)
@@ -119,7 +119,7 @@ def record(request):
         r.redirect(reverse("calls_hello"))
         return r
     except Exception, ex:
-        logger.debug( ex)
+        logger.debug(ex)
         r.redirect(reverse("calls_hello"))
         
    

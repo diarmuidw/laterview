@@ -7,4 +7,7 @@
 <pydev_pathproperty name="org.python.pydev.PROJECT_SOURCE_PATH">
 <path>/vid_website</path>
 </pydev_pathproperty>
+<pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH">
+<path>/Users/diarmuidwrenne/Projects/camera/website_env/lib/python2.7</path>
+</pydev_pathproperty>
 </pydev_project>

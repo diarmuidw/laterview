@@ -27,6 +27,7 @@ urlpatterns = patterns("",
     url(r"^cameras/", include("cameras.urls")),
     url(r"^docs/", include("docs.urls")),
     url(r"^calls/", include("calls.urls")),
+    url(r"^upload/", include("upload.urls")),
    
 )
 

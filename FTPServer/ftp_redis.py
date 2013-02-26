@@ -26,6 +26,7 @@ import urllib
 
 import hoover
 
+import redis
 
 logging.basicConfig()
 log = logging.getLogger("FTPServer")
@@ -75,29 +76,29 @@ def upload(file, username):
         hm = nowdt.strftime('%H/%M')
         dt = nowdt.strftime('%Y%m%d')
  
-        log.info( "writing:%s", file)
+        log.debug( "writing:%s", file)
 
         key = '/%s/%s/%s/%s.jpg'%(dt,username,hm,uuid.uuid4())
         imgdir = '/%s/%s/%s/'%(dt,username,hm)
         c.latestimage= key
         c.save()    
-        log.info( key)
+        log.debug( key)
         if local_settings.DOTHUMBNAIL:
             try:
-                log.info("Thumbnail /thumbnail%s"%imgdir)
+                log.debug("Thumbnail /thumbnail%s"%imgdir)
                 os.makedirs("/thumbnail%s"%imgdir)
             except:
                 pass
-            log.info('after thumbnail dir')
+            log.debug('after thumbnail dir')
             size = 128, 96
             im = PIL.open(file)
             im.thumbnail(size)
             im.save('/thumbnail%s'%key, "JPEG")
-            log.info('after thumbnail save')
+            log.debug('after thumbnail save')
         
         i = Image(camera = cams[0], camname = cams[0].name, day = dt, hour = nowdt.strftime('%H'), minute = nowdt.strftime('%M'),  key=key, format = 'jpg')
         i.save()
-        log.info( 'Saving image info to mongo with key %s'%key)
+        log.debug( 'Saving image info to mongo with key %s'%key)
         try:
             ids = ImageData.objects.filter(camera = cams[0], year = nowdt.strftime('%Y'), month = nowdt.strftime('%m'), day = nowdt.strftime('%d'), hour = nowdt.strftime('%H'))
             id = ids[0]
@@ -106,6 +107,17 @@ def upload(file, username):
         except:
             id = ImageData(camera = cams[0], year = nowdt.strftime('%Y'), month = nowdt.strftime('%m'), day = nowdt.strftime('%d'), hour = nowdt.strftime('%H'), counts=1)
             id.save()
+        try:
+            r = redis.StrictRedis(host='localhost', port=6379, db=0)
+            r.incr("allimages")
+            r.incr(username)
+            r.incr("%s~%s~%s~%s~%s"%(username, nowdt.strftime('%Y'), nowdt.strftime('%m'), nowdt.strftime('%d'),  nowdt.strftime('%H')))
+            r.incr("%s~%s~%s~%s"%(username, nowdt.strftime('%Y'), nowdt.strftime('%m'), nowdt.strftime('%d')))
+            r.incr("%s~%s~%s"%(username, nowdt.strftime('%Y'), nowdt.strftime('%m')))
+            
+        except Exception, ex:
+            log.debug(ex)
+            log.debug("Error doing upload redis save")
 
         log.info( 'Saved image data to mongo with key %s'%key)
         
@@ -138,7 +150,7 @@ class MyHandler(ftpserver.FTPHandler):
 
     def on_login(self, username):
         # do something when user login
-        log.info("Handler User Login START %s" %username)
+        log.debug("Handler User Login START %s" %username)
         try:
             #connect ('imagetest',host='ds029217.mongolab.com', port =29217, username='roletest', password = 'roletestpassw0rd')
             cams = Camera.objects.filter(name=username)
@@ -148,7 +160,7 @@ class MyHandler(ftpserver.FTPHandler):
             c.save()
         except:
             pass
-        log.info("Handler User Login END %s" %username)
+        log.debug("Handler User Login END %s" %username)
         pass
 
     def on_logout(self, username):
@@ -156,12 +168,12 @@ class MyHandler(ftpserver.FTPHandler):
         pass
         
     def on_file_sent(self, file):
-        log.info( 'File Sent %s'% file)
+        log.debug( 'File Sent %s'% file)
         pass
 
     def on_file_received(self, file):
         try:
-            log.info("Handler File received %s" %file)
+            log.debug("Handler File received %s" %file)
             #pile.spawn(upload, file)
             upload(file, self.username)
              
@@ -239,7 +251,7 @@ Files and keeps track of them.
     
     def authenticate(self, username, password):
         log.debug( 'authenticate "%s" "%s"'%(username, password))
-        log.info("Authenticate %s" %username)
+        log.debug("Authenticate %s" %username)
 
         authenticated = False
         try:
@@ -292,28 +304,17 @@ Files and keeps track of them.
         
 
     def has_perm(self, username, perm, path=None):
+        try:
+            log.debug( 'has_perm')
+            log.debug( 'calling has perm %s %s'%( perm, path))
+            
+            print self.user_table[username]['perm']
 
-        log.debug( 'has_perm')
-        log.debug( 'calling has perm %s %s'%( perm, path))
+        except Exception, ex:
+            print ex
+        return True
         
-        
-        if path is None:
-            return perm in self.user_table[username]['perm']
-
-        path = os.path.normcase(path)
-        print(self.user_table)
-        return perm in self.user_table[username]['perm']
-
-
-        
-#        if path.find( operations.path) == 0:
-#          
-#            log.debug( 'Has perm %s %s ' %( perm, path))
-#            return True
-#        else:
-#        
-#            log.debug( 'No perm %s %s ' %( perm, path))
-#            return False
+    
         
     def override_perm(self, username, directory, perm, recursive=False):
         """Override permissions for a given directory."""
@@ -334,8 +335,15 @@ Files and keeps track of them.
 #            raise ValueError('no such directory: "%s"' % operations.path)
 #        
 #        homedir = os.path.realpath(operations.path)
-        return self.user_table[username]['home']
-    
+#        return self.user_table[username]['home']
+        path = "/tmp/images/%s"%username
+        try:
+            log.debug( 'Trying to create "%s" '%(path))
+            os.makedirs(path)
+        except Exception, ex:
+            log.debug(ex)
+        return "/tmp/images/%s"%username
+      
 
 
     def get_msg_login(self, username):

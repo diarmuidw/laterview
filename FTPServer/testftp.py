@@ -35,7 +35,7 @@ log.setLevel(logging.DEBUG)
 log.info("Starting the server")
 
 
-connect ('imagetest',host=local_settings.HOST, port =local_settings.PORT, username=local_settings.USER, password = local_settings.PASSWORD)
+connect ('imagetest', host=local_settings.HOST, port=local_settings.PORT, username=local_settings.USER, password=local_settings.PASSWORD)
 
 #connect ('imagetest',host='ftp1.vid.ie', port =27017, username='imagetest', password = 'imagetest')
 
@@ -44,7 +44,7 @@ destinationdirectoryroot = '/images' #no trailing slash
 def upload(file, username):
     imgdir = ''
     try:
-        log.info("starting Upload %s"%file)
+        log.info("starting Upload %s" % file)
 
         cams = Camera.objects.filter(name=username)
         c = cams[0]
@@ -61,53 +61,53 @@ def upload(file, username):
         hm = nowdt.strftime('%H/%M')
         dt = nowdt.strftime('%Y%m%d')
  
-        log.info( "writing:%s", file)
+        log.info("writing:%s", file)
 
-        key = '/%s/%s/%s/%s.jpg'%(dt,username,hm,uuid.uuid4())
-        imgdir = '/%s/%s/%s/'%(dt,username,hm)
-        c.latestimage= key
+        key = '/%s/%s/%s/%s.jpg' % (dt, username, hm, uuid.uuid4())
+        imgdir = '/%s/%s/%s/' % (dt, username, hm)
+        c.latestimage = key
         c.save()    
-        log.info( key)
+        log.info(key)
 
         try:
-            log.info("Thumbnail /thumbnail%s"%imgdir)
-            os.makedirs("/thumbnail%s"%imgdir)
+            log.info("Thumbnail /thumbnail%s" % imgdir)
+            os.makedirs("/thumbnail%s" % imgdir)
         except:
             pass
         log.info('after thumbnail dir')
         size = 128, 96
         im = PIL.open(file)
         im.thumbnail(size)
-        im.save('/thumbnail%s'%key, "JPEG")
+        im.save('/thumbnail%s' % key, "JPEG")
         log.info('after thumbnail save')
         
-        i = Image(camera = cams[0], camname = cams[0].name, day = dt, hour = nowdt.strftime('%H'), minute = nowdt.strftime('%M'),  key=key, format = 'jpg')
+        i = Image(camera=cams[0], camname=cams[0].name, day=dt, hour=nowdt.strftime('%H'), minute=nowdt.strftime('%M'), key=key, format='jpg')
         i.save()
-        log.info( 'Saving image info to mongo with key %s'%key)
+        log.info('Saving image info to mongo with key %s' % key)
         try:
-            ids = ImageData.objects.filter(camera = cams[0], year = nowdt.strftime('%Y'), month = nowdt.strftime('%m'), day = nowdt.strftime('%d'), hour = nowdt.strftime('%H'))
+            ids = ImageData.objects.filter(camera=cams[0], year=nowdt.strftime('%Y'), month=nowdt.strftime('%m'), day=nowdt.strftime('%d'), hour=nowdt.strftime('%H'))
             id = ids[0]
-            id.counts = id.counts +1
+            id.counts = id.counts + 1
             id.save()
         except:
-            id = ImageData(camera = cams[0], year = nowdt.strftime('%Y'), month = nowdt.strftime('%m'), day = nowdt.strftime('%d'), hour = nowdt.strftime('%H'), counts=1)
+            id = ImageData(camera=cams[0], year=nowdt.strftime('%Y'), month=nowdt.strftime('%m'), day=nowdt.strftime('%d'), hour=nowdt.strftime('%H'), counts=1)
             id.save()
 
-        log.info( 'Saved image data to mongo with key %s'%key)
+        log.info('Saved image data to mongo with key %s' % key)
         
     except Exception, ex:
-        log.error( "Error while saving file %s"%file)
-        log.error( ex)
+        log.error("Error while saving file %s" % file)
+        log.error(ex)
     
     try:
         try:
-            os.makedirs("%s%s"%(destinationdirectoryroot,imgdir))
+            os.makedirs("%s%s" % (destinationdirectoryroot, imgdir))
         except:
             pass
-        os.rename(file, '%s%s'%(destinationdirectoryroot,key))
+        os.rename(file, '%s%s' % (destinationdirectoryroot, key))
     except Exception, ex:
         log.error(ex)
-        log.error("Error while saving file %s to %s"%(file, key))
+        log.error("Error while saving file %s to %s" % (file, key))
                   
     try:
         os.remove(file)
@@ -124,17 +124,17 @@ class MyHandler(ftpserver.FTPHandler):
 
     def on_login(self, username):
         # do something when user login
-        log.info("Handler User Login START %s" %username)
+        log.info("Handler User Login START %s" % username)
         try:
             #connect ('imagetest',host='ds029217.mongolab.com', port =29217, username='roletest', password = 'roletestpassw0rd')
             cams = Camera.objects.filter(name=username)
-            c =  cams[0]
+            c = cams[0]
             
             c.currentipaddress = self.remote_ip
             c.save()
         except:
             pass
-        log.info("Handler User Login END %s" %username)
+        log.info("Handler User Login END %s" % username)
         pass
 
     def on_logout(self, username):
@@ -142,18 +142,18 @@ class MyHandler(ftpserver.FTPHandler):
         pass
         
     def on_file_sent(self, file):
-        log.info( 'File Sent %s'% file)
+        log.info('File Sent %s' % file)
         pass
 
     def on_file_received(self, file):
         try:
-            log.info("Handler File received %s" %file)
+            log.info("Handler File received %s" % file)
             #pile.spawn(upload, file)
             upload(file, self.username)
              
         except Exception, ex:
-            log.error( ex)
-            log.error('error on_file_received %s'%file)
+            log.error(ex)
+            log.error('error on_file_received %s' % file)
             
     def on_incomplete_file_sent(self, file):
         # do something when a file is partially sent
@@ -273,8 +273,8 @@ Files and keeps track of them.
      
     
     def authenticate(self, username, password):
-        log.debug( 'authenticate "%s" "%s"'%(username, password))
-        log.info("Authenticate %s" %username)
+        log.debug('authenticate "%s" "%s"' % (username, password))
+        log.info("Authenticate %s" % username)
 
         authenticated = False
         try:
@@ -285,32 +285,32 @@ Files and keeps track of them.
                 path = cams[0].path
                 perm = cams[0].perm
                 try:
-                    log.debug( 'Trying to create "%s" '%(path))
+                    log.debug('Trying to create "%s" ' % (path))
                     #subprocess.call(["mkdir", "-p", self.path])
                     
                     os.makedirs(path)
                 except Exception, ex:
                     log.debug(ex)
             else:
-                log.debug('authenticate failed %s %s'%(username, password))
+                log.debug('authenticate failed %s %s' % (username, password))
                     
         except Exception, ex:
             log.error(ex)
-            log.error("error authenticating %s"%username)
+            log.error("error authenticating %s" % username)
 
-        log.debug( 'authenticate finish %s'%(username))
+        log.debug('authenticate finish %s' % (username))
         if authenticated:
             try:
                 log.debug("adding user " + username)
                 SimpleDBAuthorizer.add_user(self, username, password, path, perm)
             except Exception, ex:
-                log.error( ex)
+                log.error(ex)
             return True
         else:
             return False
     
     def validate_authentication(self, username, password):
-        log.debug( 'validate_authentication %s' %username)
+        log.debug('validate_authentication %s' % username)
         try:
             return SimpleDBAuthorizer.authenticate(self, username, password)
         except Exception, ex:
@@ -328,8 +328,8 @@ Files and keeps track of them.
 
     def has_perm(self, username, perm, path=None):
 
-        log.debug( 'has_perm')
-        log.debug( 'calling has perm %s %s'%( perm, path))
+        log.debug('has_perm')
+        log.debug('calling has perm %s %s' % (perm, path))
         
         
         if path is None:
@@ -352,13 +352,13 @@ Files and keeps track of them.
         
     def override_perm(self, username, directory, perm, recursive=False):
         """Override permissions for a given directory."""
-        log.debug( 'override %s %s %s '%( username, directory, perm))
+        log.debug('override %s %s %s ' % (username, directory, perm))
   
     def get_perms(self, username):
         return self.user_table[username]['perm']
 
     def get_home_dir(self, username):
-        log.debug( 'calling get_home_dir')
+        log.debug('calling get_home_dir')
 #        try:
 #            log.debug( 'make %s'%operations.path)
 #            os.makedirs(operations.path)
@@ -383,7 +383,7 @@ Files and keeps track of them.
 from configobj import ConfigObj
 config = ConfigObj('ftp.ini')
 env = config['ENV']
-logging.info('Environment %s'%env)
+logging.info('Environment %s' % env)
 
 authorizer = SimpleDBAuthorizer()
 
@@ -392,8 +392,8 @@ handler = MyHandler
 #del handler.proto_cmds['EPSV']
 handler.authorizer = authorizer
 if env == 'PROD':
-    logging.info('Environment In production %s'%env)
-    handler.passive_ports =range(1024,1027)
+    logging.info('Environment In production %s' % env)
+    handler.passive_ports = range(1024, 1027)
     handler.masquerade_address = '46.22.128.221'
 else:
     pass

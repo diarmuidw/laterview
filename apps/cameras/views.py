@@ -31,14 +31,19 @@ import datetime
 import string
 import random
 
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for x in range(size))
 
 class CameraForm(forms.Form):
     #id = forms.CharField(max_length=100)
     #password = forms.CharField()
-    description = forms.CharField(required= True)
-    timezone = forms.CharField(required = True)
+    description = forms.CharField(required=True)
+    timezone = forms.CharField(required=True)
 
 s3prefix = settings.S3PREFIX
 
@@ -48,38 +53,35 @@ def add_camera(request):
         form = CameraForm(request.POST) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
             try:
-                connect (settings.MONGODATABASENAME,host=settings.MONGOHOST, port =settings.MONGOPORT, username=settings.MONGOUSERNAME, password = settings.MONGOPASSWORD)
-
-             
+                connect (settings.MONGODATABASENAME, host=settings.MONGOHOST, port=settings.MONGOPORT, username=settings.MONGOUSERNAME, password=settings.MONGOPASSWORD)
+               
                 a = pinax.apps.account.models.Account.objects.filter(user=request.user)
-                camtzname  =  a[0].timezone.zone
+                camtzname = a[0].timezone.zone
             
                 user = None
                 users = mongoobjects.User.objects().filter(name=request.user.username)
                 if users.count() == 0:
                   
                     try:
-                        user = mongoobjects.User(email = request.user.email, name = u'' + request.user.username, password = '12345')
+                        user = mongoobjects.User(email=request.user.email, name=u'' + request.user.username, password='12345')
                         user.save()
                     except Exception, ex:
                         print ex
                 else:
 
                     user = users[0]
-                
-     
-               
 
                 timezone = form.cleaned_data['timezone']
                 newtz = pytz.timezone(timezone)
 
                 name = id_generator(6)
                 password = id_generator(6)
-                c = mongoobjects.Camera(owner = user, name = 'C_%s'%name, timezone = timezone, password = 'P_%s'%password,
-                                         path = '/tmp/t1/t2/t4/%s/'%'C_%s'%name, perm = 'elradfmw' , description = form.cleaned_data['description'] )
+               
+                c = mongoobjects.Camera(owner=user, name='C_%s' % name, timezone=timezone, password='P_%s' % password,
+                                         path='/tmp/t1/t2/t4/%s/' % 'C_%s' % name, perm='elradfmw' , description=form.cleaned_data['description'])
                 c.save()
                 messages.add_message(request, messages.INFO,
-                        u"Added new Camera - %s" %'C_%s'%name
+                        u"Added new Camera - %s" % 'C_%s' % name
                         )
             except Exception, ex:
                 messages.add_message(request, messages.ERROR,
@@ -88,17 +90,17 @@ def add_camera(request):
             return HttpResponseRedirect(reverse("camera_list_yours")) # Redirect after POST
     else:
         a = pinax.apps.account.models.Account.objects.filter(user=request.user)
-        camtzname  =  a[0].timezone.zone
+        camtzname = a[0].timezone.zone
         form = CameraForm(initial={'timezone': camtzname}) # An unbound form
     
     return render_to_response('camera/camera_add.html', {
         'form': form, 'timezones': TIMEZONE_CHOICES
-    },context_instance=RequestContext(request))
+    }, context_instance=RequestContext(request))
 
 
 @login_required
 def your_cameras(request, template_name="camera/cameras.html"):
-    connect (settings.MONGODATABASENAME,host=settings.MONGOHOST, port =settings.MONGOPORT, username=settings.MONGOUSERNAME, password = settings.MONGOPASSWORD)
+    connect (settings.MONGODATABASENAME, host=settings.MONGOHOST, port=settings.MONGOPORT, username=settings.MONGOUSERNAME, password=settings.MONGOPASSWORD)
     cameras = []
     cams = []
 
@@ -106,7 +108,7 @@ def your_cameras(request, template_name="camera/cameras.html"):
     try:
         #Get the user's timezone
         a = pinax.apps.account.models.Account.objects.filter(user=request.user)
-        camtzname  =  a[0].timezone
+        camtzname = a[0].timezone
         #camtz = pytz.timezone(camtzname)
         #Say the cam has timezone 'US/Eastern'
         #
@@ -129,7 +131,7 @@ def your_cameras(request, template_name="camera/cameras.html"):
 #        print camdt.strftime(fmt)
         
         user = mongoobjects.User.objects().filter(name=request.user.username)
-        cams = mongoobjects.Camera.objects().filter(owner = user[0])
+        cams = mongoobjects.Camera.objects().filter(owner=user[0])
         for c in cams:
             cameras.append(c['name'])
 
@@ -137,20 +139,20 @@ def your_cameras(request, template_name="camera/cameras.html"):
         print ex
 
     return render_to_response(template_name, {
-        "cameras": cams,"dt":dt, "s3prefix":s3prefix
+        "cameras": cams, "dt":dt, "s3prefix":s3prefix
         }, context_instance=RequestContext(request))
     
 
 @login_required
-def your_camera_images(request,cam_id, year= 0, month = 0, day= 0, hour = 0, template_name="camera/camera_images.html"):
-    connect (settings.MONGODATABASENAME,host=settings.MONGOHOST, port =settings.MONGOPORT, username=settings.MONGOUSERNAME, password = settings.MONGOPASSWORD)
+def your_camera_images(request, cam_id, year=0, month=0, day=0, hour=0, template_name="camera/camera_images.html"):
+    connect (settings.MONGODATABASENAME, host=settings.MONGOHOST, port=settings.MONGOPORT, username=settings.MONGOUSERNAME, password=settings.MONGOPASSWORD)
     images = []
     try:
         
         user = mongoobjects.User.objects().filter(name=request.user.username)
-        cams = mongoobjects.Camera.objects().filter(owner = user[0], name = cam_id)
+        cams = mongoobjects.Camera.objects().filter(owner=user[0], name=cam_id)
 
-        camimages = mongoobjects.Image.objects().filter(camera = cams[0], day = '%04d%02d%02d'%(int(year),int(month),int(day)), hour = hour)
+        camimages = mongoobjects.Image.objects().filter(camera=cams[0], day='%04d%02d%02d' % (int(year), int(month), int(day)), hour=hour)
         for i in camimages:
         
             images.append(i.key)
@@ -166,8 +168,8 @@ def your_camera_images(request,cam_id, year= 0, month = 0, day= 0, hour = 0, tem
     
 
 @login_required
-def your_camera_data(request,cam_id, year = 0, month =0, day= 0, template_name="camera/camera_data.html"):
-    connect (settings.MONGODATABASENAME,host=settings.MONGOHOST, port =settings.MONGOPORT, username=settings.MONGOUSERNAME, password = settings.MONGOPASSWORD)
+def your_camera_data(request, cam_id, year=0, month=0, day=0, template_name="camera/camera_data.html"):
+    connect (settings.MONGODATABASENAME, host=settings.MONGOHOST, port=settings.MONGOPORT, username=settings.MONGOUSERNAME, password=settings.MONGOPASSWORD)
     data = []
     cdata = {}
     try:
@@ -176,23 +178,24 @@ def your_camera_data(request,cam_id, year = 0, month =0, day= 0, template_name="
         tz = a[0].timezone
         
         user = mongoobjects.User.objects().filter(name=request.user.username)
-        cams = mongoobjects.Camera.objects().filter(owner = user[0], name = cam_id)
+        cams = mongoobjects.Camera.objects().filter(owner=user[0], name=cam_id)
 
         hdata = {}
-        camdata = mongoobjects.ImageData.objects().filter(camera = cams[0], year = year, month = month, day = day)
+        camdata = mongoobjects.ImageData.objects().filter(camera=cams[0], year=year, month=month, day=day)
         for d in camdata:
             hdata[d.hour] = d.counts
        
         
-        for i in range(0,24):
+        for i in range(0, 24):
+            
             cdata = {}
-            cdata['date']= '%04d%02d%02d'%(int(year),int(month),int(day))
-            cdata['hour']= i
+            cdata['date'] = '%04d%02d%02d' % (int(year), int(month), int(day))
+            cdata['hour'] = i
             try:
-                cdata['counts']= hdata[i]
+                cdata['counts'] = hdata[i]
                 #get first image in hour
                 try:
-                    camimages = mongoobjects.Image.objects().filter(camera = cams[0], day = '%04d%02d%02d'%(int(year),int(month),int(day)), hour = i)
+                    camimages = mongoobjects.Image.objects().filter(camera=cams[0], day='%04d%02d%02d' % (int(year), int(month), int(day)), hour=i)
                     cdata['firstimage'] = camimages[0].key
                 except Exception , ex:
                     print "problem getting first image of hour"
@@ -203,14 +206,15 @@ def your_camera_data(request,cam_id, year = 0, month =0, day= 0, template_name="
                 cdata['firstimage'] = 'static/blank64x48.jpg'
             
             data.append(cdata)
-
+        
+                    
     except Exception, ex:
         print ex
     
     
     return render_to_response(template_name, {
         "camera": cams[0], "data":data, "year":year, "month":month, "day":day,
-         "byear":year, "bmonth":month, "bday":int(day)-1,"aday":int(day)+1, 's3prefix':s3prefix
+         "byear":year, "bmonth":month, "bday":int(day) - 1, "aday":int(day) + 1, 's3prefix':s3prefix
         }, context_instance=RequestContext(request))
     
 
@@ -218,22 +222,22 @@ def your_camera_data(request,cam_id, year = 0, month =0, day= 0, template_name="
 def camera_edit(request, cam_id, template_name="camera/edit/base.html"):
 
     return render_to_response(template_name, {
-        'cam': cam_id, 
-    },context_instance=RequestContext(request))
+        'cam': cam_id,
+    }, context_instance=RequestContext(request))
     
 @login_required
 def camera_security(request, cam_id, template_name="camera/edit/base.html"):
 
     return render_to_response(template_name, {
-        'cam': cam_id, 
-    },context_instance=RequestContext(request))
+        'cam': cam_id,
+    }, context_instance=RequestContext(request))
 
 
 
 class CameraDescriptionForm(forms.Form):
     #id = forms.CharField(max_length=100)
     #password = forms.CharField()
-    description = forms.CharField(required= True)
+    description = forms.CharField(required=True)
     
     
 @login_required
@@ -241,11 +245,11 @@ def camera_description(request, cam_id, template_name="camera/edit/description.h
     print cam_id
     user = None
     cam = None
-    connect (settings.MONGODATABASENAME,host=settings.MONGOHOST, port =settings.MONGOPORT, username=settings.MONGOUSERNAME, password = settings.MONGOPASSWORD)
+    connect (settings.MONGODATABASENAME, host=settings.MONGOHOST, port=settings.MONGOPORT, username=settings.MONGOUSERNAME, password=settings.MONGOPASSWORD)
     description = ''
     try:
         user = mongoobjects.User.objects().filter(name=request.user.username)
-        cams = mongoobjects.Camera.objects().filter(owner = user[0], name = cam_id)
+        cams = mongoobjects.Camera.objects().filter(owner=user[0], name=cam_id)
         cam = cams[0]
         description = cam.description
         
@@ -263,7 +267,7 @@ def camera_description(request, cam_id, template_name="camera/edit/description.h
                         
      
                 messages.add_message(request, messages.INFO,
-                        u"Updated Camera Description to %s" %  form.cleaned_data['description']
+                        u"Updated Camera Description to %s" % form.cleaned_data['description']
                         )
             except Exception, ex:
                 messages.add_message(request, messages.ERROR,
@@ -276,7 +280,7 @@ def camera_description(request, cam_id, template_name="camera/edit/description.h
     print description
     return render_to_response(template_name, {
         'form': form, 'cam': cam.name
-    },context_instance=RequestContext(request))
+    }, context_instance=RequestContext(request))
 
 '''
 Timezone form stuff
@@ -287,7 +291,7 @@ import pytz
 class CameraTimeZoneForm(forms.Form):
     #id = forms.CharField(max_length=100)
     #timezone = forms.CharField()
-    timezone = forms.CharField(required= True)
+    timezone = forms.CharField(required=True)
     
 @login_required
 def camera_timezone(request, cam_id, template_name="camera/edit/timezone.html"):
@@ -295,13 +299,13 @@ def camera_timezone(request, cam_id, template_name="camera/edit/timezone.html"):
     print cam_id
     user = None
     cam = None
-    connect (settings.MONGODATABASENAME,host=settings.MONGOHOST, port =settings.MONGOPORT, username=settings.MONGOUSERNAME, password = settings.MONGOPASSWORD)
+    connect (settings.MONGODATABASENAME, host=settings.MONGOHOST, port=settings.MONGOPORT, username=settings.MONGOUSERNAME, password=settings.MONGOPASSWORD)
     timezone = ''
     try:
         user = mongoobjects.User.objects().filter(name=request.user.username)
-        cams = mongoobjects.Camera.objects().filter(owner = user[0], name = cam_id)
+        cams = mongoobjects.Camera.objects().filter(owner=user[0], name=cam_id)
         cam = cams[0]
-        originaltz =  cam.timezone
+        originaltz = cam.timezone
         timezone = cam.timezone
         
     except Exception, ex:
@@ -322,7 +326,7 @@ def camera_timezone(request, cam_id, template_name="camera/edit/timezone.html"):
                         
      
                 messages.add_message(request, messages.INFO,
-                        u"Updated Camera timezone to %s" %  form.cleaned_data['timezone']
+                        u"Updated Camera timezone to %s" % form.cleaned_data['timezone']
                         )
             except Exception, ex:
                 messages.add_message(request, messages.ERROR,
@@ -335,7 +339,7 @@ def camera_timezone(request, cam_id, template_name="camera/edit/timezone.html"):
     
     return render_to_response(template_name, {
         'form': form, 'cam': cam.name, 'timezones': cam.timezone
-    },context_instance=RequestContext(request))
+    }, context_instance=RequestContext(request))
 
 
 '''
@@ -345,7 +349,7 @@ password form stuff
 class CameraPasswordForm(forms.Form):
     #id = forms.CharField(max_length=100)
     #password = forms.CharField()
-    password = forms.CharField(required= True)
+    password = forms.CharField(required=True)
     
 @login_required
 def camera_password(request, cam_id, template_name="camera/edit/password.html"):
@@ -353,11 +357,11 @@ def camera_password(request, cam_id, template_name="camera/edit/password.html"):
     print cam_id
     user = None
     cam = None
-    connect (settings.MONGODATABASENAME,host=settings.MONGOHOST, port =settings.MONGOPORT, username=settings.MONGOUSERNAME, password = settings.MONGOPASSWORD)
+    connect (settings.MONGODATABASENAME, host=settings.MONGOHOST, port=settings.MONGOPORT, username=settings.MONGOUSERNAME, password=settings.MONGOPASSWORD)
     password = ''
     try:
         user = mongoobjects.User.objects().filter(name=request.user.username)
-        cams = mongoobjects.Camera.objects().filter(owner = user[0], name = cam_id)
+        cams = mongoobjects.Camera.objects().filter(owner=user[0], name=cam_id)
         cam = cams[0]
         password = cam.password
         
@@ -375,7 +379,7 @@ def camera_password(request, cam_id, template_name="camera/edit/password.html"):
                         
      
                 messages.add_message(request, messages.INFO,
-                        u"Updated Camera password to %s" %  form.cleaned_data['password']
+                        u"Updated Camera password to %s" % form.cleaned_data['password']
                         )
             except Exception, ex:
                 messages.add_message(request, messages.ERROR,
@@ -387,5 +391,5 @@ def camera_password(request, cam_id, template_name="camera/edit/password.html"):
     print password
     return render_to_response(template_name, {
         'form': form, 'cam': cam.name, 'password': password
-    },context_instance=RequestContext(request))
+    }, context_instance=RequestContext(request))
 

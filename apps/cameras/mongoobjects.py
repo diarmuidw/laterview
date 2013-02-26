@@ -5,24 +5,24 @@ import datetime
 
 
 class User(Document):
-    email =StringField(required=True)
+    email = StringField(required=True)
     name = StringField(required=True)
     password = StringField(required=True)
-    created = DateTimeField(required=True, default = datetime.datetime.utcnow)
+    created = DateTimeField(required=True, default=datetime.datetime.utcnow)
 
 class Camera(Document):
-    name = StringField(required=True, unique= True)
+    name = StringField(required=True, unique=True)
     password = StringField(required=True)
     description = StringField(required=True)
     owner = ReferenceField(User)
-    created = DateTimeField(required=True, default = datetime.datetime.utcnow)
-    path = StringField(required=True, unique = True)
+    created = DateTimeField(required=True, default=datetime.datetime.utcnow)
+    path = StringField(required=True, unique=True)
     perm = StringField(required=True)
     latestimage = StringField(required=False)
     currentipaddress = StringField(required=False)
     publickey = StringField(required=False)
     publicdescription = StringField(required=False)
-    timezone =  StringField(required=False)
+    timezone = StringField(required=False)
     meta = {
         'ordering': ['-created']
     }
@@ -32,10 +32,10 @@ class Image(Document):
     camname = StringField(required=True)
     key = StringField(required=True)
     format = StringField(required=True)
-    day =  IntField(required=True)
-    hour =  IntField(required=True)
-    minute =  IntField(required=True)
-    created = DateTimeField(required=True, default = datetime.datetime.utcnow)
+    day = IntField(required=True)
+    hour = IntField(required=True)
+    minute = IntField(required=True)
+    created = DateTimeField(required=True, default=datetime.datetime.utcnow)
     meta = {
         'ordering': ['+created']
     }
