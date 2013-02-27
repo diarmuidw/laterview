@@ -1,0 +1,27 @@
+{% extends "camera/edit/base.html" %}
+
+{% load i18n %}
+{% load ifsetting_tag %}
+{% load bootstrap_tags %}
+
+
+
+
+{% block head_title %}{% blocktrans %}Delete Camera {% endblocktrans %}{% endblock %}
+
+
+
+
+
+
+{% block camerabody %}
+
+    <h1>{% trans "Delete Camera" %}</h1>
+     
+	<form action="{% url camera_delete cam %}" method="post">{% csrf_token %}
+    {{ form.as_p }}
+	<input type="submit" value="Submit" />	
+	</form>
+   
+    
+{% endblock %}

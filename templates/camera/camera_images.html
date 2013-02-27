@@ -23,6 +23,29 @@ padding: 2px 5px;
 
 </style>
 
+
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+  google.load("visualization", "1", {packages:["corechart"]});
+  google.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = google.visualization.arrayToDataTable({{data}});
+
+    var options = {
+     
+      hAxis: {title: 'Year', titleTextStyle: {color: 'red'}}
+    };
+
+    var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+    chart.draw(data, options);
+  }
+</script>
+
+
+
+
+
 <script type="text/javascript" src="{{ STATIC_URL }}js/simplegallery.js?1111">
 
 /***********************************************
@@ -32,6 +55,9 @@ padding: 2px 5px;
 ***********************************************/
 
 </script>
+
+
+
 
 <script type="text/javascript">
 
@@ -60,6 +86,10 @@ var mygallery=new simpleGallery({
 })
 
 </script>
+
+
+
+
 {% endautoescape %}
 {% endblock %}
 
@@ -73,7 +103,9 @@ var mygallery=new simpleGallery({
 {% block body %}
 
     <h1>{% trans "Camera -" %} {{camera.description}}</h1>
+    <div id="chart_div" style="width: 900px; height: 200px;"></div>
     
+<b><a href="/cameras/images/{{cam_id}}/{{linkbefore}}/">Hour Before</a></b><b><a href="/cameras/images/{{cam_id}}/{{linkafter}}">Hour After</a></b>
     
     <div id="simplegallery1"></div>
     

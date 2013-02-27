@@ -22,7 +22,12 @@ class Camera(Document):
     currentipaddress = StringField(required=False)
     publickey = StringField(required=False)
     publicdescription = StringField(required=False)
+<<<<<<< HEAD
     timezone = StringField(required=False)
+=======
+    timezone =  StringField(required=False)
+    filter  =  StringField(required=False)
+>>>>>>> f66efd8a8efbb351e543daa16891126f6a208004
     meta = {
         'ordering': ['-created']
     }

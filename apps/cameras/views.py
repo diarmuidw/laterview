@@ -1,7 +1,7 @@
 # Create your views here.
 
 
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.http import HttpResponseRedirect, Http404, QueryDict
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
@@ -30,6 +30,7 @@ import mongoobjects
 import datetime
 import string
 import random
+import redis
 
 import logging
 
@@ -76,9 +77,14 @@ def add_camera(request):
 
                 name = id_generator(6)
                 password = id_generator(6)
+<<<<<<< HEAD
                
                 c = mongoobjects.Camera(owner=user, name='C_%s' % name, timezone=timezone, password='P_%s' % password,
                                          path='/tmp/t1/t2/t4/%s/' % 'C_%s' % name, perm='elradfmw' , description=form.cleaned_data['description'])
+=======
+                c = mongoobjects.Camera(owner = user, name = 'C_%s'%name, filter='none', timezone = timezone, password = 'P_%s'%password,
+                                         path = '/tmp/t1/t2/t4/%s/'%'C_%s'%name, perm = 'elradfmw' , description = form.cleaned_data['description'] )
+>>>>>>> f66efd8a8efbb351e543daa16891126f6a208004
                 c.save()
                 messages.add_message(request, messages.INFO,
                         u"Added new Camera - %s" % 'C_%s' % name
@@ -123,6 +129,7 @@ def your_cameras(request, template_name="camera/cameras.html"):
         hm = nowdt.strftime('%H/%M')
         dt = nowdt.strftime('%Y/%m/%d')
         fmt = '%Y-%m-%d %H:%M:%S %Z%z'
+        ch  = nowdt.strftime('%H')
         
 #        
 #        
@@ -139,37 +146,78 @@ def your_cameras(request, template_name="camera/cameras.html"):
         print ex
 
     return render_to_response(template_name, {
+<<<<<<< HEAD
         "cameras": cams, "dt":dt, "s3prefix":s3prefix
         }, context_instance=RequestContext(request))
+=======
+        "cameras": cams,"dt":dt,
+         "currenthour": ch,
+          "s3prefix":s3prefix
+          }, context_instance=RequestContext(request))
+>>>>>>> f66efd8a8efbb351e543daa16891126f6a208004
     
 
 @login_required
 def your_camera_images(request, cam_id, year=0, month=0, day=0, hour=0, template_name="camera/camera_images.html"):
     connect (settings.MONGODATABASENAME, host=settings.MONGOHOST, port=settings.MONGOPORT, username=settings.MONGOUSERNAME, password=settings.MONGOPASSWORD)
     images = []
+    
     try:
+        d = datetime.datetime(int(year),int(month),int(day),int(hour),0)
+        minusone = datetime.timedelta(minutes =-60)
+        plusone = datetime.timedelta(minutes =+60)
         
+        dbefore = d+minusone
+        dafter = d+plusone
+        #2013/02/20/02/
+        linkbefore = '%s/%02d/%02d/%02d'%(dbefore.year, dbefore.month, dbefore.day,dbefore.hour)
+        linkafter = '%s/%02d/%02d/%02d'%(dafter.year, dafter.month, dafter.day,dafter.hour)
+
         user = mongoobjects.User.objects().filter(name=request.user.username)
         cams = mongoobjects.Camera.objects().filter(owner=user[0], name=cam_id)
 
         camimages = mongoobjects.Image.objects().filter(camera=cams[0], day='%04d%02d%02d' % (int(year), int(month), int(day)), hour=hour)
         for i in camimages:
-        
             images.append(i.key)
-
-
+        
+        try:
+            data = "[['Hour','Number of Images']"
+            print data
+            r = redis.StrictRedis(host='localhost', port=6379, db=0)
+            print r
+            for i in range(0,24):
+                rdata =  '%s~%s~%02d~%02d~%02d'%(cam_id,year,int(month), int(day), i)
+                print rdata
+                numimages = r.get(rdata)
+                if numimages == None:
+                    numimages = 0
+                data = data + ",['%02d',%s]"%(i,numimages)
+                
+            data = data +"]"
+            
+            print data    
+                
+            
+        except Exception, ex:
+            print ex
+            
+    
+   
+        return render_to_response(template_name, {
+            "camera": cams[0], "data":data, 'cam_id':cam_id, "images":camimages,"linkbefore":linkbefore, "linkafter":linkafter, 's3prefix':s3prefix
+            }, context_instance=RequestContext(request))
+    
     except Exception, ex:
         print ex
-    
-    print cams[0]
-    return render_to_response(template_name, {
-        "camera": cams[0], "images":camimages, 's3prefix':s3prefix
-        }, context_instance=RequestContext(request))
-    
-
+        return render_to_response("camera/noimage.html", {}, context_instance=RequestContext(request))
 @login_required
+<<<<<<< HEAD
 def your_camera_data(request, cam_id, year=0, month=0, day=0, template_name="camera/camera_data.html"):
     connect (settings.MONGODATABASENAME, host=settings.MONGOHOST, port=settings.MONGOPORT, username=settings.MONGOUSERNAME, password=settings.MONGOPASSWORD)
+=======
+def your_camera_data(request, cam_id, year = 0, month =0, day= 0, template_name="camera/camera_data.html"):
+    connect (settings.MONGODATABASENAME,host=settings.MONGOHOST, port =settings.MONGOPORT, username=settings.MONGOUSERNAME, password = settings.MONGOPASSWORD)
+>>>>>>> f66efd8a8efbb351e543daa16891126f6a208004
     data = []
     cdata = {}
     try:
@@ -296,7 +344,7 @@ class CameraTimeZoneForm(forms.Form):
 @login_required
 def camera_timezone(request, cam_id, template_name="camera/edit/timezone.html"):
 
-    print cam_id
+
     user = None
     cam = None
     connect (settings.MONGODATABASENAME, host=settings.MONGOHOST, port=settings.MONGOPORT, username=settings.MONGOUSERNAME, password=settings.MONGOPASSWORD)
@@ -393,3 +441,134 @@ def camera_password(request, cam_id, template_name="camera/edit/password.html"):
         'form': form, 'cam': cam.name, 'password': password
     }, context_instance=RequestContext(request))
 
+
+
+
+'''
+Camera filter
+ '''
+from django.forms.fields import DateField, ChoiceField, MultipleChoiceField
+from django.forms.widgets import RadioSelect, CheckboxSelectMultiple, Select, CheckboxInput
+from django.forms.extras.widgets import SelectDateWidget
+
+
+filters = (('none','No Filter'),('country.acv', 'Country'),
+                            ('crossprocess.acv', 'Cross Process'),
+                            ('desert.acv', 'Desert'),
+                            ('forget.acv', 'Forget'),
+                            ('Hefe.acv', 'Hefe'),
+                            ('lumo.acv', 'lumo')
+                            
+                            
+                            
+                            )
+
+class CameraFilterForm(forms.Form):
+    #id = forms.CharField(max_length=100)
+    #timezone = forms.CharField()
+    filter = forms.ChoiceField(required=False, widget=Select, choices=filters)
+    
+@login_required
+def camera_filter(request, cam_id, template_name="camera/edit/filter.html"):
+
+
+    user = None
+    cam = None
+    connect (settings.MONGODATABASENAME,host=settings.MONGOHOST, port =settings.MONGOPORT, username=settings.MONGOUSERNAME, password = settings.MONGOPASSWORD)
+    filter = ''
+    try:
+        user = mongoobjects.User.objects().filter(name=request.user.username)
+        cams = mongoobjects.Camera.objects().filter(owner = user[0], name = cam_id)
+        cam = cams[0]
+        originaltz =  cam.filter
+        filter = cam.filter
+        
+    except Exception, ex:
+        cam.filter = 'None'
+
+    if request.method == 'POST': # If the form has been submitted...
+        form = CameraFilterForm(request.POST) # A form bound to the POST data
+        if form.is_valid(): # All validation rules pass
+            try:
+                filter = form.cleaned_data['filter']
+                print filter
+                #check if it is a valid filter
+                cam.filter = filter
+                cam.save()
+
+                messages.add_message(request, messages.INFO,
+                        u"Updated Camera filter" # to %s" %  form.cleaned_data['filter']
+                        )
+            except Exception, ex:
+                print ex
+                messages.add_message(request, messages.ERROR,
+                        u"There was a problem updating the filter"
+                        )
+                
+    else:
+        #CameraFormSet = formset_factory(CamerafilterForm, extra=1)
+        form = CameraFilterForm(initial={'filter': filter}) # An unbound form
+    
+    return render_to_response(template_name, {
+        'form': form, 'cam': cam.name, 'filters': cam.filter
+    },context_instance=RequestContext(request))
+
+
+
+delchoices = (('delete','Delete'))
+
+class CameraDeleteForm(forms.Form):
+    #id = forms.CharField(max_length=100)
+    #timezone = forms.CharField()
+    #delete = forms.ChoiceField(required=True, widget=CheckboxInput, choices=delchoices)
+    pass
+    
+@login_required
+def camera_delete(request, cam_id, template_name="camera/edit/delete.html"):
+
+
+    user = None
+    cam = None
+    connect (settings.MONGODATABASENAME,host=settings.MONGOHOST, port =settings.MONGOPORT, username=settings.MONGOUSERNAME, password = settings.MONGOPASSWORD)
+    try:
+        user = mongoobjects.User.objects().filter(name=request.user.username)
+        cams = mongoobjects.Camera.objects().filter(owner = user[0], name = cam_id)
+        cam = cams[0]    
+   
+        if request.method == 'POST': # If the form has been submitted...
+            print 'aaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+            form = CameraDeleteForm(request.POST) # A form bound to the POST data
+            print 'bbbbbbbbbbbbbbbbbbbbbbbbbb'
+            if form.is_valid(): # All validation rules pass
+                try:
+    
+                    #delete = form.cleaned_data['delete']
+                    #rint delete
+                    #check if it is a valid filter
+                    cam.delete()
+    
+                    messages.add_message(request, messages.INFO,
+                            u"Camera Deleted" # to %s" %  form.cleaned_data['filter']
+                            )
+                except Exception, ex:
+                    print ex
+                    messages.add_message(request, messages.ERROR,
+                            u"There was a problem deleting the camera"
+                            )
+                return redirect('camera_list_yours')
+                   
+        else:
+            #CameraFormSet = formset_factory(CamerafilterForm, extra=1)
+            form = CameraDeleteForm() # An unbound form
+        
+        return render_to_response(template_name, {
+            'form': form, 'cam': cam.name, 'filters': 'aaa'
+        },context_instance=RequestContext(request))
+    except:
+        messages.add_message(request, messages.ERROR,
+                u"Mmmmmm. Something not right happened!"
+                )
+        return redirect('camera_list_yours')        
+    
+    
+    
