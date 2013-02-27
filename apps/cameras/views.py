@@ -77,14 +77,10 @@ def add_camera(request):
 
                 name = id_generator(6)
                 password = id_generator(6)
-<<<<<<< HEAD
-               
-                c = mongoobjects.Camera(owner=user, name='C_%s' % name, timezone=timezone, password='P_%s' % password,
-                                         path='/tmp/t1/t2/t4/%s/' % 'C_%s' % name, perm='elradfmw' , description=form.cleaned_data['description'])
-=======
+
                 c = mongoobjects.Camera(owner = user, name = 'C_%s'%name, filter='none', timezone = timezone, password = 'P_%s'%password,
                                          path = '/tmp/t1/t2/t4/%s/'%'C_%s'%name, perm = 'elradfmw' , description = form.cleaned_data['description'] )
->>>>>>> f66efd8a8efbb351e543daa16891126f6a208004
+
                 c.save()
                 messages.add_message(request, messages.INFO,
                         u"Added new Camera - %s" % 'C_%s' % name
@@ -146,15 +142,11 @@ def your_cameras(request, template_name="camera/cameras.html"):
         print ex
 
     return render_to_response(template_name, {
-<<<<<<< HEAD
-        "cameras": cams, "dt":dt, "s3prefix":s3prefix
-        }, context_instance=RequestContext(request))
-=======
         "cameras": cams,"dt":dt,
          "currenthour": ch,
           "s3prefix":s3prefix
           }, context_instance=RequestContext(request))
->>>>>>> f66efd8a8efbb351e543daa16891126f6a208004
+
     
 
 @login_required
@@ -211,13 +203,8 @@ def your_camera_images(request, cam_id, year=0, month=0, day=0, hour=0, template
         print ex
         return render_to_response("camera/noimage.html", {}, context_instance=RequestContext(request))
 @login_required
-<<<<<<< HEAD
-def your_camera_data(request, cam_id, year=0, month=0, day=0, template_name="camera/camera_data.html"):
-    connect (settings.MONGODATABASENAME, host=settings.MONGOHOST, port=settings.MONGOPORT, username=settings.MONGOUSERNAME, password=settings.MONGOPASSWORD)
-=======
 def your_camera_data(request, cam_id, year = 0, month =0, day= 0, template_name="camera/camera_data.html"):
     connect (settings.MONGODATABASENAME,host=settings.MONGOHOST, port =settings.MONGOPORT, username=settings.MONGOUSERNAME, password = settings.MONGOPASSWORD)
->>>>>>> f66efd8a8efbb351e543daa16891126f6a208004
     data = []
     cdata = {}
     try:
